@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=3, minimum-scale=1, user-scalable=no">
+    <title>Document</title>
+    <style>
+        body{
+            margin: 0;
+            padding:0;
+        }
+        .container{
+            margin: 0 auto;
+            width: 300px;
+        }
+        .info{
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 32px;
+        }
+        .input{
+            outline: 0;
+            -webkit-box-sizing: border-box;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-variant: tabular-nums;
+            list-style: none;
+            -webkit-font-feature-settings: 'tnum';
+            font-feature-settings: 'tnum';
+            position: relative;
+            display: inline-block;
+            width: 140px;
+            height: 32px;
+            padding: 4px 11px;
+            color: rgba(0,0,0,0.65);
+            font-size: 14px;
+            line-height: 1.5;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            -webkit-transition: all .3s;
+            transition: all .3s;
+            margin-right: 8px;
+        }
+        .input:hover{
+            border-color: #40a9ff;
+            border-right-width: 1px !important;
+        }
+        .input:focus{
+            border-color: #40a9ff;
+            border-right-width: 1px !important;
+        }
+        .input:active{
+            border-color: #40a9ff;
+            border-right-width: 1px !important;
+        }
+        .action{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .warn{
+            color: #f5222d;
+            font-size: 14px;
+            line-height: 1.5;
+            display: none;
+        }
+        .btnOk{
+            color: #fff;
+            background-color: #1890ff;
+            border-color: #1890ff;
+            text-shadow: 0 -1px 0 rgba(0,0,0,0.12);
+            -webkit-box-shadow: 0 2px 0 rgba(0,0,0,0.045);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.045);
+            line-height: 1.499;
+            position: relative;
+            display: inline-block;
+            font-weight: 400;
+            white-space: nowrap;
+            text-align: center;
+            background-image: none;
+            border: 1px solid transparent;
+            -webkit-box-shadow: 0 2px 0 rgba(0,0,0,0.015);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.015);
+            cursor: pointer;
+            -webkit-transition: all .3s cubic-bezier(.645, .045, .355, 1);
+            transition: all .3s cubic-bezier(.645, .045, .355, 1);
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -ms-touch-action: manipulation;
+            touch-action: manipulation;
+            height: 32px;
+            padding: 0 15px;
+            font-size: 14px;
+            border-radius: 4px;
+            line-height: 32px;
+        }
+    </style>
+</head>
+<script src="https://cdn.bootcss.com/bignumber.js/8.1.1/bignumber.js"></script>
+<body>
+    <div class="container">
+       <p class="info">圆的周长公式：直径*圆周率(π:3.1415926)</p> 
+       <p class="info">赋有默认值，支持修改</p> 
+    </div>
+    <div class="container">
+            <p>原始轴直径: <input class="input" onChange="inputChange(event)" type="text" id='source' value="37"/>毫米</p>
+            <p>目标轴直径: <input class="input" type="text" id="target" value="15"/>毫米</p>
+            <p>期望皮子厚度: <input class="input" type="text" id="land" value="1.6"/>毫米</p>
+            <p class="warn">请输入正确的数字</p>
+    </div>
+    <div class="action">
+       <span id="confirm" class="btnOk">开始计算</span>
+    </div>
+
+    <div class="result">
+        <p>
+                总计出皮子长度： <span id="resultInfo"></span>
+        </p>
+        <p>
+                最终得到轴的直径: <span id="resultR"></span>
+        </p>
+    </div>
+    <div id="progress">
+
+    </div>
+    <script>
+        function inputChange (e){
+            var warn = document.getElementsByClassName('warn')[0];
+            var reg = /^([1-9][0-9]*)+(.[0-9]{1,2})?$/;
+            var value = e.target.value;
+            if(!reg.test(value)){
+                warn.style.display = 'block'
+            }else {
+                warn.style.display = 'none'
+            }
+        }
+        const PI = 3.1415926;
+        const source = document.getElementById('source')
+        const target = document.getElementById('target')
+        const land = document.getElementById('land')
+        const resultInfo = document.getElementById('resultInfo')
+        const resultR = document.getElementById('resultR')
+        const progress = document.getElementById('progress')
+        const confirm = document.getElementById('confirm')
+        confirm.addEventListener('click',function(){
+            var sourceVal = new BigNumber((source.value || 37))
+        var targetVal = new BigNumber((target.value || 15))
+        var thickVal =  new BigNumber("-"+(land.value || 1.6))
+        // const thickVal =  new BigNumber((land.value || 1.6))
+        console.log('thickVal',thickVal.toFixed(2))
+        var total = new BigNumber(0);
+        var R = 0;
+        var current;
+        var str = '计算过如下'
+        var finalVal  = new  BigNumber(targetVal)
+        console.log(`sourceVal.comparedTo(finalVal) >= 0`,sourceVal.comparedTo(finalVal))
+        
+        while(sourceVal.comparedTo(finalVal) >= 0){
+            // R =  sourceVal.dividedBy(2)
+            current = sourceVal.multipliedBy(PI)
+            total = total.plus(current);
+
+            console.log("原始轴直径=",sourceVal.toFixed(2)+"毫米","当前轴直径生产皮子长度:",current.toFixed(2)+"毫米","累计长度:",total.toFixed(2)+"毫米" )
+            str += "<p>当前轴直径=" +  sourceVal.toFixed(2)+"毫米,"+"生产皮子长度:"+current.toFixed(2)+"毫米,"+"累计长度:"+total.toFixed(2)+"毫米</p>"
+            sourceVal = sourceVal.plus(thickVal.multipliedBy(2))
+            console.log("sourceVal",sourceVal.toFixed(),"sourceVal.comparedTo(finalVal)",sourceVal.comparedTo(finalVal))
+        }
+        console.log('total = ',total)
+        str += "<p>最终得到轴的直径"+ sourceVal.plus(thickVal.multipliedBy(2).absoluteValue()) + '毫米</p>'
+        progress.innerHTML = str;
+        resultInfo.innerHTML = total.dividedBy(10) + "厘米";
+        resultR.innerHTML = sourceVal.plus(thickVal.multipliedBy(2).absoluteValue()).dividedBy(10) + "厘米";
+        })
+        
+    </script>
+</body>
+</html>
